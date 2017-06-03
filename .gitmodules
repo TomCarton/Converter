@@ -1,0 +1,6 @@
+[submodule "libraries/core"]
+	path = libraries/core
+	url = git@github.com:TomCarton/libCore.git
+[submodule "libraries/image"]
+	path = libraries/image
+	url = git@github.com:TomCarton/libImage.git
