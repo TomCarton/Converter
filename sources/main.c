@@ -62,7 +62,7 @@ int main(int argc, char *argv[])
     }
 
     // read parameters
-    for (unsigned int i = 0; i < argc; ++i)
+    for (unsigned int i = 1; i < argc; ++i)
     {
         // output
         if (strcmp(argv[i], "-o") == 0 || strcmp(argv[i], "--output") == 0)
@@ -82,9 +82,14 @@ int main(int argc, char *argv[])
             goto usage;
         }
         // input
-        else
+        else if (strlen(infile) < 1)
         {
             strcpy(infile, argv[i]);
+        }
+        else
+        {
+            fprintf(stderr, "unknown parameter '%s'\n", argv[i]);
+            return 1;
         }
     }
 
@@ -103,7 +108,7 @@ int main(int argc, char *argv[])
     {
         if (stricmp(ext, ".pi1") == 0 || stricmp(ext, ".pc1") == 0)
         {
-            err = ImageLoadDegas(argv[1], &image);
+            err = ImageLoadDegas(infile, &image);
         }
     }
 
@@ -118,18 +123,37 @@ int main(int argc, char *argv[])
     }
     else
     {
-        fprintf(stderr, "input file has not been recognized\n");
+        fprintf(stderr, "input file '%s' has not been recognized\n", infile);
         return 1;
     }
 
 
-    ImageSaveTGA("result.tga", image);
+    if (strlen(outfile) == 0)
+    {
+        strcpy(outfile, infile);
+        ext = strrchr(outfile, '.');
+        if (ext == NULL)
+        {
+            ext = outfile + strlen(outfile);
+        }
 
-    return 0;
+        strcpy(ext, ".png");
+    }
 
-    printf("file: %s\nextension: %s\n", infile, pathExtension(infile));
+    printf("output to '%s'\n", outfile);
 
-    ImageSaveTGA("result.tga", image);
+    ext = strrchr(outfile, '.');
+    if (ext)
+    {
+        if (stricmp(ext, ".tga") == 0)
+        {
+            ImageSaveTGA(outfile, image);
+        }
+        else if (stricmp(ext, ".png") == 0)
+        {
+            ImageSavePNG(outfile, image);
+        }
+    }
 
     return 0;
 
